@@ -11,6 +11,7 @@ interface FoodItem {
   protein: number;  // Add protein property
   fat: number;      // Add fat property
   brand: string;
+  carbohydrates: number; // Include carbohydrates in the type
   ingredients: string[];
 }
 
@@ -44,6 +45,7 @@ export default function TabTwoScreen() {
           protein: Math.round(item.food.nutrients.PROCNT || 0),  // Protein in grams
           fat: Math.round(item.food.nutrients.FAT || 0),        // Fat in grams
           brand: item.food.brand || 'Unknown',
+          carbohydrates: Math.round(item.food.nutrients.CHOCDF || 0), // Carbs in grams
           ingredients: item.food.ingredients || [],
         }));
 
@@ -79,7 +81,7 @@ export default function TabTwoScreen() {
           renderItem={({ item }) => (
             <FoodListItem 
               item={item} 
-              onAddCalories={() => addNutrients(item.cal, item.protein, item.fat)}  // Pass the protein and fat values to the context
+              onAddCalories={() => addNutrients(item.cal, item.protein, item.fat, item.carbohydrates)}  // Pass carbs to the context
             />
           )}
           keyExtractor={(item, index) => index.toString()}

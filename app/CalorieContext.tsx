@@ -5,7 +5,8 @@ interface CalorieContextProps {
   calories: number;
   protein: number;
   fat: number;
-  addNutrients: (cal: number, protein: number, fat: number) => void;
+  carbohydrates: number; // Add carbohydrates
+  addNutrients: (cal: number, protein: number, fat: number, carbs: number) => void; // Update function signature
 }
 
 // Create the context
@@ -13,6 +14,7 @@ export const CalorieContext = createContext<CalorieContextProps>({
   calories: 0,
   protein: 0,
   fat: 0,
+  carbohydrates: 0, // Initialize carbohydrates
   addNutrients: () => {},
 });
 
@@ -21,15 +23,17 @@ export const CalorieProvider = ({ children }: { children: ReactNode }) => {
   const [calories, setCalories] = useState(0);
   const [protein, setProtein] = useState(0);
   const [fat, setFat] = useState(0);
+  const [carbohydrates, setCarbohydrates] = useState(0); // State for carbohydrates
 
-  const addNutrients = (cal: number, protein: number, fat: number) => {
+  const addNutrients = (cal: number, protein: number, fat: number, carbs: number) => {
     setCalories((prevCalories) => prevCalories + cal);
     setProtein((prevProtein) => prevProtein + protein);
     setFat((prevFat) => prevFat + fat);
+    setCarbohydrates((prevCarbs) => prevCarbs + carbs); // Update carbohydrates
   };
 
   return (
-    <CalorieContext.Provider value={{ calories, protein, fat, addNutrients }}>
+    <CalorieContext.Provider value={{ calories, protein, fat, carbohydrates, addNutrients }}>
       {children}
     </CalorieContext.Provider>
   );

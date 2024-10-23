@@ -6,11 +6,11 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 interface FoodItem {
     label: string;
     cal: number;
-    fat: number;  // New field for fat content
-    protein: number;  // New field for protein content
+    fat: number;  
+    protein: number;  
     brand: string;
+    carbohydrates: number;  // Include carbs in the FoodItem type
 }
-
 
 // Define the props type for the component
 interface FoodListItemProps {
@@ -23,7 +23,9 @@ const FoodListItem: React.FC<FoodListItemProps> = ({ item, onAddCalories }) => {
         <View style={styles.container}>
             <View style={{ flex: 1, gap: 5 }}>
                 <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{item.label}</Text>
-                <Text style={{ color: 'dimgray' }}>{item.cal} cal, {item.fat}g fat, {item.protein}g protein, {item.brand}</Text>
+                <Text style={{ color: 'dimgray' }}>
+                    {item.cal} cal, {item.fat}g fat, {item.protein}g protein, {item.carbohydrates}g carbs, {item.brand}
+                </Text>
             </View>
             <TouchableOpacity onPress={onAddCalories}>
                 <AntDesign name="pluscircleo" size={24} color="royalblue" />
@@ -31,7 +33,6 @@ const FoodListItem: React.FC<FoodListItemProps> = ({ item, onAddCalories }) => {
         </View>
     );
 };
-
 
 const styles = StyleSheet.create({
     container: {
