@@ -8,6 +8,8 @@ import { CalorieContext } from '../CalorieContext';  // Import the context
 interface FoodItem {
   label: string;
   cal: number;
+  fat: number;        // New field for fat
+  protein: number;    // New field for protein
   brand: string;
   ingredients: string[];
 }
@@ -39,8 +41,10 @@ export default function TabTwoScreen() {
         const results: FoodItem[] = response.data.hints.map((item: any) => ({
           label: item.food.label,
           cal: Math.round(item.food.nutrients.ENERC_KCAL),
+          fat: Math.round(item.food.nutrients.FAT || 0),   // Extract fat
+          protein: Math.round(item.food.nutrients.PROCNT || 0),  // Extract protein
           brand: item.food.brand || 'Unknown',
-          ingredients: item.food.ingredients || [],  // Get ingredients if available
+          ingredients: item.food.ingredients || [],  
         }));
 
         setFoodItems(results);
