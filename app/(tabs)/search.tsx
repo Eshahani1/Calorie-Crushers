@@ -8,8 +8,8 @@ import { CalorieContext } from '../CalorieContext';  // Import the context
 interface FoodItem {
   label: string;
   cal: number;
-  fat: number;        // New field for fat
-  protein: number;    // New field for protein
+  protein: number;  // Add protein property
+  fat: number;      // Add fat property
   brand: string;
   ingredients: string[];
 }
@@ -19,8 +19,8 @@ export default function TabTwoScreen() {
   const [foodItems, setFoodItems] = useState<FoodItem[]>([]); // Use the defined FoodItem type
   const [loading, setLoading] = useState(false);
 
-  // Get the addCalories function from the context
-  const { addCalories } = useContext(CalorieContext);
+  // Get the addNutrients function from the context
+  const { addNutrients } = useContext(CalorieContext);
 
   // Use useEffect to perform search automatically when the search term changes
   useEffect(() => {
@@ -41,10 +41,10 @@ export default function TabTwoScreen() {
         const results: FoodItem[] = response.data.hints.map((item: any) => ({
           label: item.food.label,
           cal: Math.round(item.food.nutrients.ENERC_KCAL),
-          fat: Math.round(item.food.nutrients.FAT || 0),   // Extract fat
-          protein: Math.round(item.food.nutrients.PROCNT || 0),  // Extract protein
+          protein: Math.round(item.food.nutrients.PROCNT || 0),  // Protein in grams
+          fat: Math.round(item.food.nutrients.FAT || 0),        // Fat in grams
           brand: item.food.brand || 'Unknown',
-          ingredients: item.food.ingredients || [],  
+          ingredients: item.food.ingredients || [],
         }));
 
         setFoodItems(results);
@@ -79,7 +79,7 @@ export default function TabTwoScreen() {
           renderItem={({ item }) => (
             <FoodListItem 
               item={item} 
-              onAddCalories={() => addCalories(item.cal)}  // Pass the addCalories function to the item
+              onAddCalories={() => addNutrients(item.cal, item.protein, item.fat)}  // Pass the protein and fat values to the context
             />
           )}
           keyExtractor={(item, index) => index.toString()}
