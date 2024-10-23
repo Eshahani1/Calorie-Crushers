@@ -4,11 +4,14 @@ import React from 'react';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { CalorieProvider } from '../CalorieContext';
+import { NavigationContainer } from '@react-navigation/native';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
   return (
+    <CalorieProvider>
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
@@ -33,5 +36,6 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+    </CalorieProvider>
   );
 }

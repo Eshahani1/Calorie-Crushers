@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import AntDesign from '@expo/vector-icons/AntDesign';
 
 // Define the type for the item prop
@@ -12,16 +12,19 @@ interface FoodItem {
 // Define the props type for the component
 interface FoodListItemProps {
     item: FoodItem;
+    onAddCalories: () => void;  // Add onAddCalories prop
 }
 
-const FoodListItem: React.FC<FoodListItemProps> = ({ item }) => {
+const FoodListItem: React.FC<FoodListItemProps> = ({ item, onAddCalories }) => {
     return (
         <View style={styles.container}>
             <View style={{ flex: 1, gap: 5 }}>
                 <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{item.label}</Text>
                 <Text style={{ color: 'dimgray' }}>{item.cal} cal, {item.brand}</Text>
             </View>
-            <AntDesign name="pluscircleo" size={24} color="royalblue" />
+            <TouchableOpacity onPress={onAddCalories}>
+                <AntDesign name="pluscircleo" size={24} color="royalblue" />
+            </TouchableOpacity>
         </View>
     );
 };

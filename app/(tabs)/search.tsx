@@ -1,12 +1,24 @@
 import { View, TextInput, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import fetchData from '@/api/axios';  // Importing axios configuration
 import FoodListItem from '@/components/FoodListItem';
+import { CalorieContext } from '../CalorieContext';  // Import the context
+
+// Define a type for the food item
+interface FoodItem {
+  label: string;
+  cal: number;
+  brand: string;
+  ingredients: string[];
+}
 
 export default function TabTwoScreen() {
   const [search, setSearch] = useState('');
-  const [foodItems, setFoodItems] = useState([]);
+  const [foodItems, setFoodItems] = useState<FoodItem[]>([]); // Use the defined FoodItem type
   const [loading, setLoading] = useState(false);
+
+  // Get the addCalories function from the context
+  const { addCalories } = useContext(CalorieContext);
 
   // Use useEffect to perform search automatically when the search term changes
   useEffect(() => {
@@ -24,7 +36,7 @@ export default function TabTwoScreen() {
           'nutrition-type': 'logging',
         });
 
-        const results = response.data.hints.map((item: any) => ({
+        const results: FoodItem[] = response.data.hints.map((item: any) => ({
           label: item.food.label,
           cal: Math.round(item.food.nutrients.ENERC_KCAL),
           brand: item.food.brand || 'Unknown',
@@ -60,7 +72,12 @@ export default function TabTwoScreen() {
       ) : (
         <FlatList
           data={foodItems}
-          renderItem={({ item }) => <FoodListItem item={item} />}
+          renderItem={({ item }) => (
+            <FoodListItem 
+              item={item} 
+              onAddCalories={() => addCalories(item.cal)}  // Pass the addCalories function to the item
+            />
+          )}
           keyExtractor={(item, index) => index.toString()}
           contentContainerStyle={{ gap: 5 }}
         />

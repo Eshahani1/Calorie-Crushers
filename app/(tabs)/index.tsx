@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import React, { useContext } from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { CalorieContext } from '../CalorieContext'; // Import the context
 
 const MAX_CALORIES = 2000; // Maximum calorie limit
 
 export default function HomeScreen() {
-  // State to track current calorie intake
-  const [calories, setCalories] = useState(0);
+  // Get the calories from the context
+  const { calories } = useContext(CalorieContext);
 
   // Calculate the percentage of the calorie bar based on current intake
   const caloriePercentage = (calories / MAX_CALORIES) * 100;
@@ -21,9 +22,6 @@ export default function HomeScreen() {
       <View style={styles.barContainer}>
         <View style={[styles.calorieBar, { width: `${caloriePercentage}%` }]} />
       </View>
-
-      {/* Example Button to Increase Calories for Testing */}
-      <Text style={styles.button} onPress={() => setCalories(calories + 200)}>Add 200 Calories</Text>
     </View>
   );
 }
