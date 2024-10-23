@@ -8,27 +8,27 @@ import { CalorieContext } from '../CalorieContext';  // Import the context
 interface FoodItem {
   label: string;
   cal: number;
-  protein: number;  // Add protein property
-  fat: number;      // Add fat property
+  protein: number;
+  fat: number;
   brand: string;
-  carbohydrates: number; // Include carbohydrates in the type
+  carbohydrates: number;
   ingredients: string[];
 }
 
 export default function TabTwoScreen() {
   const [search, setSearch] = useState('');
-  const [foodItems, setFoodItems] = useState<FoodItem[]>([]); // Use the defined FoodItem type
+  const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Get the addNutrients function from the context
-  const { addNutrients } = useContext(CalorieContext);
+  // Get the addNutrients and addRecentlyAddedFood functions from the context
+  const { addNutrients, addRecentlyAddedFood } = useContext(CalorieContext);
 
   // Use useEffect to perform search automatically when the search term changes
   useEffect(() => {
     const performSearch = async () => {
       if (!search.trim()) {
         setFoodItems([]); // Clear food items if the search is empty
-        return; // Return if search input is empty
+        return;
       }
 
       setLoading(true);
@@ -43,7 +43,7 @@ export default function TabTwoScreen() {
           label: item.food.label,
           cal: Math.round(item.food.nutrients.ENERC_KCAL),
           protein: Math.round(item.food.nutrients.PROCNT || 0),  // Protein in grams
-          fat: Math.round(item.food.nutrients.FAT || 0),        // Fat in grams
+          fat: Math.round(item.food.nutrients.FAT || 0),         // Fat in grams
           brand: item.food.brand || 'Unknown',
           carbohydrates: Math.round(item.food.nutrients.CHOCDF || 0), // Carbs in grams
           ingredients: item.food.ingredients || [],
@@ -62,7 +62,7 @@ export default function TabTwoScreen() {
     }, 300); // Adjust the delay as needed (300 ms here)
 
     return () => clearTimeout(delayDebounceFn); // Cleanup function
-  }, [search]); // Only run this effect when 'search' changes
+  }, [search]);
 
   return (
     <View style={styles.container}>
@@ -81,7 +81,11 @@ export default function TabTwoScreen() {
           renderItem={({ item }) => (
             <FoodListItem 
               item={item} 
-              onAddCalories={() => addNutrients(item.cal, item.protein, item.fat, item.carbohydrates)}  // Pass carbs to the context
+              onAddCalories={() => {
+                // Update both the nutrients and recently added food
+                addNutrients(item.cal, item.protein, item.fat, item.carbohydrates);
+                addRecentlyAddedFood(item);  // Add the food to the recently added list
+              }}  
             />
           )}
           keyExtractor={(item, index) => index.toString()}

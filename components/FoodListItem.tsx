@@ -1,24 +1,34 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ToastAndroid, Platform, Alert } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
-// Define the type for the item prop
 interface FoodItem {
     label: string;
     cal: number;
-    fat: number;  
-    protein: number;  
+    fat: number;
+    protein: number;
     brand: string;
-    carbohydrates: number;  // Include carbs in the FoodItem type
+    carbohydrates: number;
 }
 
-// Define the props type for the component
 interface FoodListItemProps {
     item: FoodItem;
-    onAddCalories: () => void;  // Add onAddCalories prop
+    onAddCalories: () => void;
 }
 
 const FoodListItem: React.FC<FoodListItemProps> = ({ item, onAddCalories }) => {
+    // Function to handle the pop-up notification
+    const handleAddCalories = () => {
+        onAddCalories();  // Execute the function passed from the parent
+
+        // Show a pop-up notification
+        if (Platform.OS === 'android') {
+            ToastAndroid.show(`${item.label} added to your list!`, ToastAndroid.SHORT);
+        } else {
+            Alert.alert('Food Added', `${item.label} added to your list!`);
+        }
+    };
+
     return (
         <View style={styles.container}>
             <View style={{ flex: 1, gap: 5 }}>
@@ -27,7 +37,7 @@ const FoodListItem: React.FC<FoodListItemProps> = ({ item, onAddCalories }) => {
                     {item.cal} cal, {item.fat}g fat, {item.protein}g protein, {item.carbohydrates}g carbs, {item.brand}
                 </Text>
             </View>
-            <TouchableOpacity onPress={onAddCalories}>
+            <TouchableOpacity onPress={handleAddCalories}>
                 <AntDesign name="pluscircleo" size={24} color="royalblue" />
             </TouchableOpacity>
         </View>
