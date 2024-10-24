@@ -93,7 +93,6 @@ export default function TabTwoScreen() {
         ingredients: item.food.ingredients || [],
       }));
 
-      // Randomly select 5 items
       const shuffled = items.sort(() => 0.5 - Math.random());
       const randomItems = shuffled.slice(0, 5);
       setFoodItems(randomItems);
