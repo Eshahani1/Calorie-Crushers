@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ToastAndroid, Platform, Alert } from 'react-native';
+import React, { useRef } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ToastAndroid, Platform, Alert, Animated } from 'react-native';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
 interface FoodItem {
@@ -17,16 +17,25 @@ interface FoodListItemProps {
 }
 
 const FoodListItem: React.FC<FoodListItemProps> = ({ item, onAddCalories }) => {
+    const scaleAnim = useRef(new Animated.Value(1)).current; // Initial scale value
+
     // Function to handle the pop-up notification
     const handleAddCalories = () => {
         onAddCalories();  // Execute the function passed from the parent
 
-        // Show a pop-up notification
-        if (Platform.OS === 'android') {
-            ToastAndroid.show(`${item.label} added to your list!`, ToastAndroid.SHORT);
-        } else {
-            Alert.alert('Food Added', `${item.label} added to your list!`);
-        }
+        // Start animation
+        Animated.sequence([
+            Animated.timing(scaleAnim, {
+                toValue: 1.5, // Scale up to 1.5
+                duration: 150, // Animation duration
+                useNativeDriver: true, // Use native driver for performance
+            }),
+            Animated.timing(scaleAnim, {
+                toValue: 1, // Scale back to original size
+                duration: 150,
+                useNativeDriver: true,
+            }),
+        ]).start();
     };
 
     return (
@@ -38,7 +47,9 @@ const FoodListItem: React.FC<FoodListItemProps> = ({ item, onAddCalories }) => {
                 </Text>
             </View>
             <TouchableOpacity onPress={handleAddCalories}>
-                <AntDesign name="pluscircleo" size={24} color="royalblue" />
+                <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+                    <AntDesign name="checkcircleo" size={24} color="royalblue" />
+                </Animated.View>
             </TouchableOpacity>
         </View>
     );
