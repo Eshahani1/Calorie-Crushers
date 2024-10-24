@@ -1,4 +1,4 @@
-import React, { createContext, useState, ReactNode } from 'react';
+import React, { createContext, useState, ReactNode } from "react";
 
 // Define the shape of the context
 interface FoodItem {
@@ -17,8 +17,13 @@ interface CalorieContextProps {
   fat: number;
   carbohydrates: number;
   recentlyAddedFoods: FoodItem[];
-  addNutrients: (cal: number, protein: number, fat: number, carbs: number) => void;
-  addRecentlyAddedFood: (food: Omit<FoodItem, 'id'>) => void; // Omit id when adding
+  addNutrients: (
+    cal: number,
+    protein: number,
+    fat: number,
+    carbs: number
+  ) => void;
+  addRecentlyAddedFood: (food: Omit<FoodItem, "id">) => void; // Omit id when adding
   removeRecentlyAddedFood: (food: FoodItem) => void; // Function for removing food
 }
 
@@ -43,21 +48,31 @@ export const CalorieProvider = ({ children }: { children: ReactNode }) => {
   const [recentlyAddedFoods, setRecentlyAddedFoods] = useState<FoodItem[]>([]);
   const [nextId, setNextId] = useState(1); // Counter for assigning unique IDs
 
-  const addNutrients = (cal: number, proteinAmount: number, fatAmount: number, carbs: number) => {
+  const addNutrients = (
+    cal: number,
+    proteinAmount: number,
+    fatAmount: number,
+    carbs: number
+  ) => {
     setCalories((prevCalories) => prevCalories + cal);
     setProtein((prevProtein) => prevProtein + proteinAmount);
     setFat((prevFat) => prevFat + fatAmount);
     setCarbohydrates((prevCarbs) => prevCarbs + carbs);
   };
 
-  const addRecentlyAddedFood = (food: Omit<FoodItem, 'id'>) => {
+  const addRecentlyAddedFood = (food: Omit<FoodItem, "id">) => {
     const foodWithId = { ...food, id: nextId }; // Assign the current counter value as the ID
-    setRecentlyAddedFoods((prevFoods) => [foodWithId, ...prevFoods.slice(0, 4)]); // Keep only the last 5 items
+    setRecentlyAddedFoods((prevFoods) => [
+      foodWithId,
+      ...prevFoods.slice(0, 4),
+    ]); // Keep only the last 5 items
     setNextId((prevId) => prevId + 1); // Increment the counter for the next food item
   };
 
   const removeRecentlyAddedFood = (foodToRemove: FoodItem) => {
-    setRecentlyAddedFoods((prevFoods) => prevFoods.filter(food => food.id !== foodToRemove.id));
+    setRecentlyAddedFoods((prevFoods) =>
+      prevFoods.filter((food) => food.id !== foodToRemove.id)
+    );
   };
 
   return (

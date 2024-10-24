@@ -1,10 +1,17 @@
-import { View, TextInput, FlatList, StyleSheet, ActivityIndicator, Text } from 'react-native';
-import { useState, useEffect, useContext } from 'react';
-import fetchData from '@/api/axios';  // Importing axios configuration
-import FoodListItem from '@/components/FoodListItem';
-import { CalorieContext } from '../CalorieContext';  // Import the context
-import { useFocusEffect } from '@react-navigation/native';  // Import useFocusEffect
-import React from 'react';
+import {
+  View,
+  TextInput,
+  FlatList,
+  StyleSheet,
+  ActivityIndicator,
+  Text,
+} from "react-native";
+import { useState, useEffect, useContext } from "react";
+import fetchData from "@/api/axios"; // Importing axios configuration
+import FoodListItem from "@/components/FoodListItem";
+import { CalorieContext } from "../CalorieContext"; // Import the context
+import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect
+import React from "react";
 
 // Define a type for the food item
 interface FoodItem {
@@ -19,53 +26,52 @@ interface FoodItem {
 
 // Define an array of food categories
 const foodCategories = [
-  'fruit', 
-  'pizza', 
-  'hotdog', 
-  'vegetables', 
-  'chicken', 
-  'fish', 
-  'pasta', 
-  'beef', 
-  'seafood', 
-  'salad', 
-  'soup', 
-  'sandwich', 
-  'burger', 
-  'dessert', 
-  'cake', 
-  'ice cream', 
-  'smoothie', 
-  'bread', 
-  'rice', 
-  'cereal', 
-  'snack', 
-  'taco', 
-  'wrap', 
-  'pancake', 
-  'waffle', 
-  'burrito', 
-  'sushi', 
-  'stir fry', 
-  'curry', 
-  'quinoa', 
-  'omelette', 
-  'pudding', 
-  'fruit salad', 
-  'popcorn', 
-  'cheese', 
-  'cottage cheese', 
-  'yogurt', 
-  'muffin', 
-  'croissant', 
-  'scone', 
-  'pita', 
-  'tortilla'
+  "fruit",
+  "pizza",
+  "hotdog",
+  "vegetables",
+  "chicken",
+  "fish",
+  "pasta",
+  "beef",
+  "seafood",
+  "salad",
+  "soup",
+  "sandwich",
+  "burger",
+  "dessert",
+  "cake",
+  "ice cream",
+  "smoothie",
+  "bread",
+  "rice",
+  "cereal",
+  "snack",
+  "taco",
+  "wrap",
+  "pancake",
+  "waffle",
+  "burrito",
+  "sushi",
+  "stir fry",
+  "curry",
+  "quinoa",
+  "omelette",
+  "pudding",
+  "fruit salad",
+  "popcorn",
+  "cheese",
+  "cottage cheese",
+  "yogurt",
+  "muffin",
+  "croissant",
+  "scone",
+  "pita",
+  "tortilla",
 ];
-// Add some the  grams to the protein 
 
 export default function TabTwoScreen() {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -76,20 +82,21 @@ export default function TabTwoScreen() {
   const fetchRandomFoods = async () => {
     try {
       // Randomly select a food category from the array
-      const randomCategory = foodCategories[Math.floor(Math.random() * foodCategories.length)];
-      
+      const randomCategory =
+        foodCategories[Math.floor(Math.random() * foodCategories.length)];
+
       const response = await fetchData({
         ingr: randomCategory,
-        'nutrition-type': 'logging',
+        "nutrition-type": "logging",
       });
 
       // Select items from the response
       const items = response.data.hints.map((item: any) => ({
         label: item.food.label,
         cal: Math.round(item.food.nutrients.ENERC_KCAL),
-        protein: Math.round(item.food.nutrients.PROCNT || 0),  // Protein in grams
-        fat: Math.round(item.food.nutrients.FAT || 0),         // Fat in grams
-        brand: item.food.brand || 'Unknown',
+        protein: Math.round(item.food.nutrients.PROCNT || 0), // Protein in grams
+        fat: Math.round(item.food.nutrients.FAT || 0), // Fat in grams
+        brand: item.food.brand || "Unknown",
         carbohydrates: Math.round(item.food.nutrients.CHOCDF || 0), // Carbs in grams
         ingredients: item.food.ingredients || [],
       }));
@@ -98,13 +105,15 @@ export default function TabTwoScreen() {
       const randomItems = shuffled.slice(0, 5);
       setFoodItems(randomItems);
     } catch (error) {
-      console.error('Error fetching random food items from Edamam API:', error);
+      console.error("Error fetching random food items from Edamam API:", error);
     }
   };
 
-  // Use useFocusEffect to fetch random foods whenever the tab is opened
+  // Use useFocusEffect to reset the search bar and fetch random foods whenever the tab is opened
   useFocusEffect(
     React.useCallback(() => {
+      // Reset the search input to blank when the screen is focused
+      setSearch("");
       fetchRandomFoods();
     }, [])
   );
@@ -121,22 +130,22 @@ export default function TabTwoScreen() {
       try {
         const response = await fetchData({
           ingr: search,
-          'nutrition-type': 'logging',
+          "nutrition-type": "logging",
         });
 
         const results: FoodItem[] = response.data.hints.map((item: any) => ({
           label: item.food.label,
           cal: Math.round(item.food.nutrients.ENERC_KCAL),
-          protein: Math.round(item.food.nutrients.PROCNT || 0),  // Protein in grams
-          fat: Math.round(item.food.nutrients.FAT || 0),         // Fat in grams
-          brand: item.food.brand || 'Unknown',
+          protein: Math.round(item.food.nutrients.PROCNT || 0), // Protein in grams
+          fat: Math.round(item.food.nutrients.FAT || 0), // Fat in grams
+          brand: item.food.brand || "Unknown",
           carbohydrates: Math.round(item.food.nutrients.CHOCDF || 0), // Carbs in grams
           ingredients: item.food.ingredients || [],
         }));
 
         setFoodItems(results);
       } catch (error) {
-        console.error('Error fetching data from Edamam API:', error);
+        console.error("Error fetching data from Edamam API:", error);
       } finally {
         setLoading(false);
       }
@@ -158,23 +167,30 @@ export default function TabTwoScreen() {
         placeholder="Search for food"
         style={styles.input}
       />
-      
+
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <>
           {/* Conditionally render the recommended text based on whether the search bar is empty */}
-          {!search.trim() && <Text style={styles.recommendedText}>Recommended Items</Text>}
+          {!search.trim() && (
+            <Text style={styles.recommendedText}>Recommended Items</Text>
+          )}
           <FlatList
             data={foodItems}
             renderItem={({ item }) => (
-              <FoodListItem 
-                item={item} 
+              <FoodListItem
+                item={item}
                 onAddCalories={() => {
                   // Update both the nutrients and recently added food
-                  addNutrients(item.cal, item.protein, item.fat, item.carbohydrates);
-                  addRecentlyAddedFood(item);  // Add the food to the recently added list
-                }}  
+                  addNutrients(
+                    item.cal,
+                    item.protein,
+                    item.fat,
+                    item.carbohydrates
+                  );
+                  addRecentlyAddedFood(item); // Add the food to the recently added list
+                }}
               />
             )}
             keyExtractor={(item, index) => index.toString()}
@@ -189,24 +205,24 @@ export default function TabTwoScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 10,
     paddingTop: 50,
     gap: 10,
   },
   input: {
-    backgroundColor: '#f2f2f2',
+    backgroundColor: "#f2f2f2",
     padding: 10,
     borderRadius: 20,
   },
   welcomeText: {
     fontSize: 20, // Adjust font size as needed
-    fontWeight: 'bold', // Make the text bold
+    fontWeight: "bold", // Make the text bold
     marginBottom: 20, // Space below the text
   },
   recommendedText: {
     fontSize: 18, // Adjust font size for the recommended items text
-    fontWeight: 'bold', // Make the text bold
+    fontWeight: "bold", // Make the text bold
     marginVertical: 10, // Space above and below the text
   },
 });

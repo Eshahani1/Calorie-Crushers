@@ -15,7 +15,7 @@ const fetchData = (params = {}) => {
     },
   });
 
-  return instance.get('');  // Make a GET request to the baseURL with the provided params
+  return instance.get(""); // Make a GET request to the baseURL with the provided params
 };
 
 export default fetchData;
