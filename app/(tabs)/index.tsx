@@ -1,18 +1,32 @@
-import React, { useContext } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-import { CalorieContext } from '../CalorieContext'; 
+import React, { useContext } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
+import { CalorieContext } from "../CalorieContext";
 
 const MAX_CALORIES = 2000;
 
 export default function HomeScreen() {
-  const { calories, protein, fat, carbohydrates, recentlyAddedFoods, addNutrients, removeRecentlyAddedFood } = useContext(CalorieContext);
+  const {
+    calories,
+    protein,
+    fat,
+    carbohydrates,
+    recentlyAddedFoods,
+    addNutrients,
+    removeRecentlyAddedFood,
+  } = useContext(CalorieContext);
 
   // Calculate total calories consumed
   const totalCalories = calories;
 
   // Calculate calories from each macronutrient
   const proteinCalories = protein * 4; // Protein: 4 calories per gram
-  const fatCalories = fat * 9;         // Fat: 9 calories per gram
+  const fatCalories = fat * 9; // Fat: 9 calories per gram
   const carbCalories = carbohydrates * 4; // Carbohydrates: 4 calories per gram
 
   // Calculate percentages based on MAX_CALORIES
@@ -37,21 +51,44 @@ export default function HomeScreen() {
         </Text>
 
         <View style={styles.barContainer}>
-          <View style={[styles.calorieBar, { width: `${totalPercentage}%`, backgroundColor: 'blue' }]} />
-          <View style={[styles.calorieBar, { width: `${proteinPercentage}%`, backgroundColor: 'orange' }]} />
-          <View style={[styles.calorieBar, { width: `${fatPercentage}%`, backgroundColor: 'purple' }]} />
-          <View style={[styles.calorieBar, { width: `${carbPercentage}%`, backgroundColor: 'teal' }]} />
+          <View
+            style={[
+              styles.calorieBar,
+              { width: `${totalPercentage}%`, backgroundColor: "blue" },
+            ]}
+          />
+          <View
+            style={[
+              styles.calorieBar,
+              { width: `${proteinPercentage}%`, backgroundColor: "orange" },
+            ]}
+          />
+          <View
+            style={[
+              styles.calorieBar,
+              { width: `${fatPercentage}%`, backgroundColor: "purple" },
+            ]}
+          />
+          <View
+            style={[
+              styles.calorieBar,
+              { width: `${carbPercentage}%`, backgroundColor: "teal" },
+            ]}
+          />
         </View>
 
         <View style={styles.legend}>
           <Text style={styles.legendItem}>
-            <Text style={{ color: 'orange' }}>■</Text> Protein: {proteinPercentage.toFixed(1)}%
+            <Text style={{ color: "orange" }}>■</Text> Protein:{" "}
+            {proteinPercentage.toFixed(1)}% ({protein.toFixed(1)}g)
           </Text>
           <Text style={styles.legendItem}>
-            <Text style={{ color: 'purple' }}>■</Text> Fat: {fatPercentage.toFixed(1)}%
+            <Text style={{ color: "purple" }}>■</Text> Fat:{" "}
+            {fatPercentage.toFixed(1)}% ({fat.toFixed(1)}g)
           </Text>
           <Text style={styles.legendItem}>
-            <Text style={{ color: 'teal' }}>■</Text> Carbs: {carbPercentage.toFixed(1)}%
+            <Text style={{ color: "teal" }}>■</Text> Carbs:{" "}
+            {carbPercentage.toFixed(1)}% ({carbohydrates.toFixed(1)}g)
           </Text>
         </View>
 
@@ -82,41 +119,41 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
     padding: 20,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 30,
     marginTop: 40,
   },
   contentContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
   },
   calorieText: {
     fontSize: 18,
     marginBottom: 10,
   },
   barContainer: {
-    width: '100%',
+    width: "100%",
     height: 20,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: "#e0e0e0",
     borderRadius: 10,
-    overflow: 'hidden',
-    flexDirection: 'row',
+    overflow: "hidden",
+    flexDirection: "row",
     marginBottom: 10,
   },
   calorieBar: {
-    height: '100%',
+    height: "100%",
   },
   legend: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
+    flexDirection: "column",
+    alignItems: "flex-start",
     marginTop: 10,
   },
   legendItem: {
@@ -125,17 +162,17 @@ const styles = StyleSheet.create({
   },
   recentlyAddedTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginTop: 20,
     marginBottom: 10,
   },
   foodItemContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingVertical: 8,
     paddingHorizontal: 15,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: "#f9f9f9",
     borderRadius: 10,
     marginVertical: 5,
   },
@@ -143,16 +180,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   removeButton: {
-    backgroundColor: '#ff6347',
+    backgroundColor: "#ff6347",
     borderRadius: 50,
     width: 30,
     height: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginLeft: 10, // Add margin to the left for spacing
   },
   removeButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 20,
   },
 });

@@ -62,6 +62,7 @@ const foodCategories = [
   'pita', 
   'tortilla'
 ];
+// Add some the  grams to the protein 
 
 export default function TabTwoScreen() {
   const [search, setSearch] = useState('');
