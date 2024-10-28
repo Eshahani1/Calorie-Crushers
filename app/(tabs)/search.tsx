@@ -109,20 +109,17 @@ export default function TabTwoScreen() {
     }
   };
 
-  // Use useFocusEffect to reset the search bar and fetch random foods whenever the tab is opened
   useFocusEffect(
     React.useCallback(() => {
-      // Reset the search input to blank when the screen is focused
       setSearch("");
       fetchRandomFoods();
     }, [])
   );
 
-  // Use useEffect to perform search automatically when the search term changes
   useEffect(() => {
     const performSearch = async () => {
       if (!search.trim()) {
-        return; // No action needed if the search bar is empty
+        return; 
       }
 
       setLoading(true);
@@ -136,10 +133,10 @@ export default function TabTwoScreen() {
         const results: FoodItem[] = response.data.hints.map((item: any) => ({
           label: item.food.label,
           cal: Math.round(item.food.nutrients.ENERC_KCAL),
-          protein: Math.round(item.food.nutrients.PROCNT || 0), // Protein in grams
-          fat: Math.round(item.food.nutrients.FAT || 0), // Fat in grams
+          protein: Math.round(item.food.nutrients.PROCNT || 0), 
+          fat: Math.round(item.food.nutrients.FAT || 0), 
           brand: item.food.brand || "Unknown",
-          carbohydrates: Math.round(item.food.nutrients.CHOCDF || 0), // Carbs in grams
+          carbohydrates: Math.round(item.food.nutrients.CHOCDF || 0), 
           ingredients: item.food.ingredients || [],
         }));
 
@@ -153,9 +150,9 @@ export default function TabTwoScreen() {
 
     const delayDebounceFn = setTimeout(() => {
       performSearch();
-    }, 300); // Adjust the delay as needed (300 ms here)
+    }, 300); 
 
-    return () => clearTimeout(delayDebounceFn); // Cleanup function
+    return () => clearTimeout(delayDebounceFn); 
   }, [search]);
 
   return (
@@ -172,7 +169,6 @@ export default function TabTwoScreen() {
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
         <>
-          {/* Conditionally render the recommended text based on whether the search bar is empty */}
           {!search.trim() && (
             <Text style={styles.recommendedText}>Recommended Items</Text>
           )}
@@ -182,14 +178,14 @@ export default function TabTwoScreen() {
               <FoodListItem
                 item={item}
                 onAddCalories={() => {
-                  // Update both the nutrients and recently added food
+                  
                   addNutrients(
                     item.cal,
                     item.protein,
                     item.fat,
                     item.carbohydrates
                   );
-                  addRecentlyAddedFood(item); // Add the food to the recently added list
+                  addRecentlyAddedFood(item); 
                 }}
               />
             )}
@@ -216,13 +212,13 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   welcomeText: {
-    fontSize: 20, // Adjust font size as needed
-    fontWeight: "bold", // Make the text bold
-    marginBottom: 20, // Space below the text
+    fontSize: 20, 
+    fontWeight: "bold", 
+    marginBottom: 20, 
   },
   recommendedText: {
-    fontSize: 18, // Adjust font size for the recommended items text
-    fontWeight: "bold", // Make the text bold
-    marginVertical: 10, // Space above and below the text
+    fontSize: 18, 
+    fontWeight: "bold", 
+    marginVertical: 10, 
   },
 });

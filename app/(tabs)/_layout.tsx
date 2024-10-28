@@ -54,6 +54,18 @@ export default function TabLayout() {
             ),
           }}
         />
+        <Tabs.Screen
+          name="barcode"
+          options={{
+            title: "Barcode Scanner",
+            tabBarIcon: ({ color, focused }) => (
+              <TabBarIcon
+                name={focused ? "camera": 'camera-outline'}
+                color={color}
+              />
+            ),
+          }}
+        />
       </Tabs>
     </CalorieProvider>
   );

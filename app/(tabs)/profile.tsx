@@ -30,25 +30,25 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "center",
-    justifyContent: "center", // Center the content vertically
+    justifyContent: "center", 
     padding: 20,
   },
   welcomeText: {
-    fontSize: 20, // Optional: Adjust font size for better readability
-    fontWeight: "bold", // Optional: Make the text bold
-    marginBottom: 20, // Space below the welcome text
+    fontSize: 20, 
+    fontWeight: "bold", 
+    marginBottom: 20, 
   },
   button: {
-    backgroundColor: "#4CAF50", // Green background color
-    padding: 15, // Padding for button
-    borderRadius: 5, // Rounded corners
-    width: "80%", // Button width
-    alignItems: "center", // Center text horizontally
-    marginVertical: 10, // Space between buttons
+    backgroundColor: "#4CAF50",
+    padding: 15, 
+    borderRadius: 5, 
+    width: "80%",
+    alignItems: "center", 
+    marginVertical: 10, 
   },
   buttonText: {
-    color: "#fff", // White text color
-    fontSize: 16, // Font size for button text
-    fontWeight: "bold", // Optional: Make the button text bold
+    color: "#fff", 
+    fontSize: 16, 
+    fontWeight: "bold", 
   },
 });

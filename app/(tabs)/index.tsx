@@ -25,20 +25,19 @@ export default function HomeScreen() {
   const totalCalories = calories;
 
   // Calculate calories from each macronutrient
-  const proteinCalories = protein * 4; // Protein: 4 calories per gram
-  const fatCalories = fat * 9; // Fat: 9 calories per gram
-  const carbCalories = carbohydrates * 4; // Carbohydrates: 4 calories per gram
+  const proteinCalories = protein * 4;
+  const fatCalories = fat * 9; 
+  const carbCalories = carbohydrates * 4; 
 
   // Calculate percentages based on MAX_CALORIES
   const proteinPercentage = (proteinCalories / MAX_CALORIES) * 100;
   const fatPercentage = (fatCalories / MAX_CALORIES) * 100;
   const carbPercentage = (carbCalories / MAX_CALORIES) * 100;
-  const totalPercentage = ((totalCalories / MAX_CALORIES) * 100).toFixed(1); // Total percentage of consumed calories
 
   // Function to handle removing nutrients and food
   const handleRemoveNutrients = (item) => {
-    addNutrients(-item.cal, -item.protein, -item.fat, -item.carbohydrates); // Subtract the values
-    removeRecentlyAddedFood(item); // Remove the food from the recently added list
+    addNutrients(-item.cal, -item.protein, -item.fat, -item.carbohydrates); 
+    removeRecentlyAddedFood(item); 
   };
 
   return (
@@ -52,28 +51,13 @@ export default function HomeScreen() {
 
         <View style={styles.barContainer}>
           <View
-            style={[
-              styles.calorieBar,
-              { width: `${totalPercentage}%`, backgroundColor: "blue" },
-            ]}
+            style={[styles.calorieBar, { width: `${proteinPercentage}%`, backgroundColor: "orange" }]}
           />
           <View
-            style={[
-              styles.calorieBar,
-              { width: `${proteinPercentage}%`, backgroundColor: "orange" },
-            ]}
+            style={[styles.calorieBar, { width: `${fatPercentage}%`, backgroundColor: "purple" }]}
           />
           <View
-            style={[
-              styles.calorieBar,
-              { width: `${fatPercentage}%`, backgroundColor: "purple" },
-            ]}
-          />
-          <View
-            style={[
-              styles.calorieBar,
-              { width: `${carbPercentage}%`, backgroundColor: "teal" },
-            ]}
+            style={[styles.calorieBar, { width: `${carbPercentage}%`, backgroundColor: "teal" }]}
           />
         </View>
 
@@ -109,7 +93,7 @@ export default function HomeScreen() {
               </TouchableOpacity>
             </View>
           )}
-          keyExtractor={(item) => item.id.toString()} // Use the unique ID as the key
+          keyExtractor={(item) => item.id.toString()} 
         />
       </View>
     </View>
@@ -168,16 +152,20 @@ const styles = StyleSheet.create({
   },
   foodItemContainer: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start", 
     justifyContent: "space-between",
     paddingVertical: 8,
     paddingHorizontal: 15,
     backgroundColor: "#f9f9f9",
     borderRadius: 10,
     marginVertical: 5,
+    width: "100%", 
   },
   foodItemText: {
     fontSize: 16,
+    flex: 1, 
+    marginRight: 10, 
+    maxHeight: 50, 
   },
   removeButton: {
     backgroundColor: "#ff6347",
@@ -186,7 +174,7 @@ const styles = StyleSheet.create({
     height: 30,
     justifyContent: "center",
     alignItems: "center",
-    marginLeft: 10, // Add margin to the left for spacing
+    marginLeft: 10, 
   },
   removeButtonText: {
     color: "#fff",

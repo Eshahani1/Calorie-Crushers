@@ -26,21 +26,21 @@ interface FoodListItemProps {
 }
 
 const FoodListItem: React.FC<FoodListItemProps> = ({ item, onAddCalories }) => {
-  const scaleAnim = useRef(new Animated.Value(1)).current; // Initial scale value
+  const scaleAnim = useRef(new Animated.Value(1)).current; 
 
   // Function to handle the pop-up notification
   const handleAddCalories = () => {
-    onAddCalories(); // Execute the function passed from the parent
+    onAddCalories(); 
 
     // Start animation
     Animated.sequence([
       Animated.timing(scaleAnim, {
-        toValue: 1.5, // Scale up to 1.5
-        duration: 150, // Animation duration
-        useNativeDriver: true, // Use native driver for performance
+        toValue: 1.5, 
+        duration: 150, 
+        useNativeDriver: true, 
       }),
       Animated.timing(scaleAnim, {
-        toValue: 1, // Scale back to original size
+        toValue: 1, 
         duration: 150,
         useNativeDriver: true,
       }),

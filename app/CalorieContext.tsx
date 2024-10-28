@@ -23,8 +23,8 @@ interface CalorieContextProps {
     fat: number,
     carbs: number
   ) => void;
-  addRecentlyAddedFood: (food: Omit<FoodItem, "id">) => void; // Omit id when adding
-  removeRecentlyAddedFood: (food: FoodItem) => void; // Function for removing food
+  addRecentlyAddedFood: (food: Omit<FoodItem, "id">) => void; 
+  removeRecentlyAddedFood: (food: FoodItem) => void; 
 }
 
 // Create the context
@@ -36,7 +36,7 @@ export const CalorieContext = createContext<CalorieContextProps>({
   recentlyAddedFoods: [],
   addNutrients: () => {},
   addRecentlyAddedFood: () => {},
-  removeRecentlyAddedFood: () => {}, // Initialize the new function
+  removeRecentlyAddedFood: () => {}, 
 });
 
 // Create a provider component to wrap around the app
@@ -46,7 +46,7 @@ export const CalorieProvider = ({ children }: { children: ReactNode }) => {
   const [fat, setFat] = useState(0);
   const [carbohydrates, setCarbohydrates] = useState(0);
   const [recentlyAddedFoods, setRecentlyAddedFoods] = useState<FoodItem[]>([]);
-  const [nextId, setNextId] = useState(1); // Counter for assigning unique IDs
+  const [nextId, setNextId] = useState(1); 
 
   const addNutrients = (
     cal: number,
@@ -61,12 +61,12 @@ export const CalorieProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const addRecentlyAddedFood = (food: Omit<FoodItem, "id">) => {
-    const foodWithId = { ...food, id: nextId }; // Assign the current counter value as the ID
+    const foodWithId = { ...food, id: nextId }; 
     setRecentlyAddedFoods((prevFoods) => [
       foodWithId,
       ...prevFoods.slice(0, 4),
-    ]); // Keep only the last 5 items
-    setNextId((prevId) => prevId + 1); // Increment the counter for the next food item
+    ]); 
+    setNextId((prevId) => prevId + 1); 
   };
 
   const removeRecentlyAddedFood = (foodToRemove: FoodItem) => {
@@ -85,7 +85,7 @@ export const CalorieProvider = ({ children }: { children: ReactNode }) => {
         recentlyAddedFoods,
         addNutrients,
         addRecentlyAddedFood,
-        removeRecentlyAddedFood, // Provide the new function
+        removeRecentlyAddedFood, 
       }}
     >
       {children}
