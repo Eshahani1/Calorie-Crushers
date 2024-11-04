@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const APP_ID = "6c39b851";
-const APP_KEY = "0cf0aa66a152d1431aba6dafd98e464b";
+const APP_KEY = "fd1b79de7c8c514b08a2a898e279151a";
 
 const baseURL = "https://api.edamam.com/api/food-database/v2/parser";
 
