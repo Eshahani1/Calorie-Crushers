@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
 import { BarCodeScanner } from "expo-barcode-scanner"; 
 import { CalorieContext } from "../CalorieContext"; 
-import fetchData from "@/api/axios"; 
+import fetchData from "@/api/barcode"; 
 
 export default function Barcode() {
   const [hasPermission, setHasPermission] = useState(null);

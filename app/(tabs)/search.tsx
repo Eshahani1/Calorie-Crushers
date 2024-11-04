@@ -126,8 +126,8 @@ export default function TabTwoScreen() {
 
       try {
         const response = await fetchData({
-          ingr: search,
-          "nutrition-type": "logging",
+          ingr: search,  // Changed from upc[ingr] to ingr
+          "nutrition-type": "cooking", // Changed from logging to cooking
         });
 
         const results: FoodItem[] = response.data.hints.map((item: any) => ({
@@ -178,7 +178,6 @@ export default function TabTwoScreen() {
               <FoodListItem
                 item={item}
                 onAddCalories={() => {
-                  
                   addNutrients(
                     item.cal,
                     item.protein,
