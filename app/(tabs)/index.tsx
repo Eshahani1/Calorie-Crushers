@@ -21,8 +21,8 @@ export default function HomeScreen() {
     removeRecentlyAddedFood,
   } = useContext(CalorieContext);
 
-  // Calculate total calories consumed
-  const totalCalories = calories;
+  // Calculate total calories consumed and round to a whole number
+  const totalCalories = Math.round(calories); 
 
   // Calculate calories from each macronutrient
   const proteinCalories = protein * 4;
