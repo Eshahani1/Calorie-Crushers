@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView } from "react-native";
 import { auth } from "@/api/firebaseConfig";  // Auth config
 import { db } from "@/api/firebaseConfig2";  // Firestore config
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, User } from "firebase/auth";
@@ -58,8 +58,6 @@ export default function Profile() {
       setAge("");
       setGoal("");
       setGender("");
-      
-      // Optionally, navigate to profile screen here after registration
     } catch (error: unknown) {
       if (error instanceof Error) {
         console.error("Registration error:", error.message);
@@ -113,7 +111,7 @@ export default function Profile() {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text style={styles.welcomeText}>Welcome to The Profile Page</Text>
 
       {!user ? (
@@ -151,6 +149,7 @@ export default function Profile() {
               style={styles.inputField}
               value={height}
               onChangeText={setHeight}
+              keyboardType="numeric"
             />
           </View>
 
@@ -160,6 +159,7 @@ export default function Profile() {
               style={styles.inputField}
               value={weight}
               onChangeText={setWeight}
+              keyboardType="numeric"
             />
           </View>
 
@@ -169,6 +169,7 @@ export default function Profile() {
               style={styles.inputField}
               value={age}
               onChangeText={setAge}
+              keyboardType="numeric"
             />
           </View>
 
@@ -199,63 +200,66 @@ export default function Profile() {
           </TouchableOpacity>
         </>
       )}
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: "#f5f5f5",
     padding: 20,
+    paddingTop: 70,
   },
   welcomeText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 20,
+    fontSize: 24,
+    fontWeight: "600",
+    marginBottom: 30,
+    color: "#333",
+    textAlign: "center",
   },
   inputRow: {
+    marginBottom: 15,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginBottom: 10,
   },
   inputLabel: {
     fontSize: 16,
-    fontWeight: "bold",
-    marginRight: 10,
-    textAlign: 'left',
-    flex: 1,
+    color: "#333",
+    width: "40%",
   },
   input: {
     height: 50,
-    width: "80%",
-    paddingLeft: 15,
-    borderWidth: 2,
-    borderColor: "#ccc",
-    borderRadius: 10,
+    width: "100%",
     marginBottom: 15,
+    paddingLeft: 15,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 10,
+    backgroundColor: "#fff",
   },
   inputField: {
-    width: "70%",
-    padding: 10,
-    borderWidth: 2,
-    borderColor: "#ccc",
-    borderRadius: 5,
+    width: "55%",
+    height: 45,
+    paddingLeft: 10,
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 8,
+    backgroundColor: "#fff",
   },
   button: {
     backgroundColor: "#4CAF50",
     padding: 15,
-    borderRadius: 5,
-    width: "80%",
+    borderRadius: 10,
+    width: "100%",
+    marginTop: 20,
     alignItems: "center",
-    marginVertical: 10,
+    elevation: 3,
   },
   buttonText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
   },
 });

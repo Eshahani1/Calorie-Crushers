@@ -19,26 +19,36 @@ export default function HomeScreen() {
 
   const [maxCalories, setMaxCalories] = useState(2000); 
   const [userGoal, setUserGoal] = useState("");  
-  const [userGender, setUserGender] = useState("");  // New state for gender
-  const [userAge, setUserAge] = useState(0);  // New state for age
-  const [userWeight, setUserWeight] = useState(0);  // New state for weight
-  const [userHeight, setUserHeight] = useState(0);  // New state for height
+  const [userGender, setUserGender] = useState("");  
+  const [userAge, setUserAge] = useState(0);  
+  const [userWeight, setUserWeight] = useState(0);  
+  const [userHeight, setUserHeight] = useState(0);
 
   useFocusEffect(
     React.useCallback(() => {
       const fetchUserProfile = async () => {
         const user = auth.currentUser;
         if (user) {
+          // Reset state before fetching new data
+          setUserGoal("");
+          setUserGender("");
+          setUserAge(0);
+          setUserWeight(0);
+          setUserHeight(0);
+          
           const userDoc = await getDoc(doc(db, "users", user.uid));
           if (userDoc.exists()) {
             const userData = userDoc.data();
-            setUserGoal(userData.goal);  // Set the user's goal
-            setUserGender(userData.gender);  // Set the user's gender
-            setUserAge(userData.age);  // Set the user's age
-            setUserWeight(userData.weight);  // Set the user's weight
-            setUserHeight(userData.height);  // Set the user's height
+            setUserGoal(userData.goal);
+            setUserGender(userData.gender);
+            setUserAge(userData.age);
+            setUserWeight(userData.weight);
+            setUserHeight(userData.height);
             calculateCalories(userData.goal, userData.age, userData.weight, userData.height, userData.gender);
           }
+        } else {
+          // If no user is logged in, use default values
+          setMaxCalories(2000);  // Default value when no user is logged in
         }
       };
       fetchUserProfile();
@@ -46,37 +56,32 @@ export default function HomeScreen() {
   );
 
   useEffect(() => {
-    calculateCalories(userGoal, userAge, userWeight, userHeight, userGender);  
-  }, [userGoal, userAge, userWeight, userHeight, userGender]);  // Add all dependencies for calculation
-  
+    calculateCalories(userGoal, userAge, userWeight, userHeight, userGender);
+  }, [userGoal, userAge, userWeight, userHeight, userGender]);
+
   const calculateCalories = (goal: string, age: number, weight: number, height: number, gender: string) => {
-    // Basal Metabolic Rate (BMR) calculation based on gender
     let bmr: number;
 
     if (gender === "Male") {
-      bmr = 10 * weight + 6.25 * height - 5 * age + 5;  // Mifflin-St Jeor for males
+      bmr = 10 * weight + 6.25 * height - 5 * age + 5;
     } else {
-      bmr = 10 * weight + 6.25 * height - 5 * age - 161;  // Mifflin-St Jeor for females
+      bmr = 10 * weight + 6.25 * height - 5 * age - 161;
     }
 
-    // Total Daily Energy Expenditure (TDEE) calculation based on activity level (optional)
-    // You can adjust this with a multiplier if the user is more or less active.
-    // For example:
-    const tdee = bmr * 1.2;  // Sedentary activity level (you can adjust based on the user's activity level)
+    const tdee = bmr * 1.2;
 
-    // Adjust calorie intake based on the user's goal
     let calorieIntake = tdee;
 
     if (goal === "Gain") {
-      calorieIntake += 500;  // Surplus for gaining weight
+      calorieIntake += 500;
     } else if (goal === "Lose") {
-      calorieIntake -= 500;  // Deficit for losing weight
+      calorieIntake -= 500;
     }
 
-    setMaxCalories(calorieIntake);  // Update the state with the calculated calorie intake
+    setMaxCalories(calorieIntake);
   };
 
-  const totalCalories = Math.round(calories); 
+  const totalCalories = Math.round(calories);
 
   const proteinCalories = protein * 4;
   const fatCalories = fat * 9; 
@@ -93,7 +98,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome To Calorie Crushers!</Text>
+      <Text style={styles.title}>Welcome to Calorie Crushers!</Text>
 
       <View style={styles.contentContainer}>
         <Text style={styles.calorieText}>
@@ -130,7 +135,7 @@ export default function HomeScreen() {
           renderItem={({ item }) => (
             <View style={styles.foodItemContainer}>
               <Text style={styles.foodItemText}>
-                {item.label} - {item.cal} kcal
+                {item.label} - {item.cal} kcal {item.brand && `(${item.brand})`}
               </Text>
               <TouchableOpacity
                 style={styles.removeButton}
@@ -147,37 +152,42 @@ export default function HomeScreen() {
   );
 }
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#f8f9fa",
     alignItems: "center",
     padding: 20,
+    paddingTop: 70,
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 30,
-    marginTop: 40,
+    fontSize: 28,
+    fontWeight: "700",
+    color: "#4a4a4a",
+    marginBottom: 20,
   },
   contentContainer: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignItems: "center",
     width: "100%",
+    marginBottom: 20,
   },
   calorieText: {
-    fontSize: 18,
-    marginBottom: 10,
+    fontSize: 20,
+    fontWeight: "500",
+    color: "#333",
+    marginBottom: 15,
   },
   barContainer: {
     width: "100%",
     height: 20,
-    backgroundColor: "#e0e0e0",
+    backgroundColor: "#e1e1e1",
     borderRadius: 10,
     overflow: "hidden",
     flexDirection: "row",
-    marginBottom: 10,
+    marginBottom: 20,
   },
   calorieBar: {
     height: "100%",
@@ -186,42 +196,45 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     alignItems: "flex-start",
     marginTop: 10,
+    marginLeft: 15,
   },
   legendItem: {
     fontSize: 16,
-    marginVertical: 2,
+    fontWeight: "400",
+    marginVertical: 5,
   },
   recentlyAddedTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
+    fontSize: 22,
+    fontWeight: "600",
     marginTop: 20,
-    marginBottom: 10,
+    color: "#333",
   },
   foodItemContainer: {
     flexDirection: "row",
-    alignItems: "flex-start", 
+    alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    backgroundColor: "#f9f9f9",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: "#ffffff",
     borderRadius: 10,
-    marginVertical: 5,
-    width: "100%", 
+    marginVertical: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    width: "100%",
   },
   foodItemText: {
     fontSize: 16,
-    flex: 1, 
-    marginRight: 10, 
-    maxHeight: 50, 
+    fontWeight: "400",
+    flex: 1,
+    marginRight: 10,
   },
   removeButton: {
-    backgroundColor: "#ff6347",
-    borderRadius: 50,
-    width: 30,
-    height: 30,
-    justifyContent: "center",
-    alignItems: "center",
-    marginLeft: 10, 
+    backgroundColor: "#ff595e",
+    borderRadius: 20,
+    padding: 10,
   },
   removeButtonText: {
     color: "#fff",

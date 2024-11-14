@@ -166,7 +166,7 @@ export default function TabTwoScreen() {
       />
 
       {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#4CAF50" style={styles.loading} />
       ) : (
         <>
           {!search.trim() && (
@@ -189,7 +189,7 @@ export default function TabTwoScreen() {
               />
             )}
             keyExtractor={(item, index) => index.toString()}
-            contentContainerStyle={{ gap: 5 }}
+            contentContainerStyle={styles.foodList}
           />
         </>
       )}
@@ -200,24 +200,37 @@ export default function TabTwoScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    padding: 10,
-    paddingTop: 50,
-    gap: 10,
+    backgroundColor: "#f5f5f5",
+    padding: 15,
+    paddingTop: 70,
+    gap: 15,
   },
   input: {
-    backgroundColor: "#f2f2f2",
-    padding: 10,
-    borderRadius: 20,
+    backgroundColor: "#fff",
+    padding: 15,
+    borderRadius: 30,
+    marginBottom: 20,
+    elevation: 5, // Add a subtle shadow for better input appearance
   },
   welcomeText: {
-    fontSize: 20, 
-    fontWeight: "bold", 
-    marginBottom: 20, 
+    fontSize: 22, 
+    fontWeight: "600", 
+    marginBottom: 10, 
+    textAlign: "center",
+    color: "#333",
   },
   recommendedText: {
-    fontSize: 18, 
-    fontWeight: "bold", 
-    marginVertical: 10, 
+    fontSize: 20, 
+    fontWeight: "600", 
+    marginVertical: 15, 
+    textAlign: "center",
+    color: "#4CAF50",
+  },
+  loading: {
+    marginTop: 20,
+  },
+  foodList: {
+    gap: 10,
+    paddingBottom: 20,
   },
 });
