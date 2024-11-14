@@ -1,14 +1,10 @@
-import React, { useContext } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-} from "react-native";
+import React, { useContext, useEffect, useState } from "react";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
 import { CalorieContext } from "../CalorieContext";
-
-const MAX_CALORIES = 2000;
+import { db } from "@/api/firebaseConfig2";  // Firestore config
+import { doc, getDoc } from "firebase/firestore"; // Firestore functions
+import { auth } from "@/api/firebaseConfig";  // Auth config
+import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect
 
 export default function HomeScreen() {
   const {
@@ -21,20 +17,75 @@ export default function HomeScreen() {
     removeRecentlyAddedFood,
   } = useContext(CalorieContext);
 
-  // Calculate total calories consumed and round to a whole number
+  const [maxCalories, setMaxCalories] = useState(2000); 
+  const [userGoal, setUserGoal] = useState("");  
+  const [userGender, setUserGender] = useState("");  // New state for gender
+  const [userAge, setUserAge] = useState(0);  // New state for age
+  const [userWeight, setUserWeight] = useState(0);  // New state for weight
+  const [userHeight, setUserHeight] = useState(0);  // New state for height
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const fetchUserProfile = async () => {
+        const user = auth.currentUser;
+        if (user) {
+          const userDoc = await getDoc(doc(db, "users", user.uid));
+          if (userDoc.exists()) {
+            const userData = userDoc.data();
+            setUserGoal(userData.goal);  // Set the user's goal
+            setUserGender(userData.gender);  // Set the user's gender
+            setUserAge(userData.age);  // Set the user's age
+            setUserWeight(userData.weight);  // Set the user's weight
+            setUserHeight(userData.height);  // Set the user's height
+            calculateCalories(userData.goal, userData.age, userData.weight, userData.height, userData.gender);
+          }
+        }
+      };
+      fetchUserProfile();
+    }, []) 
+  );
+
+  useEffect(() => {
+    calculateCalories(userGoal, userAge, userWeight, userHeight, userGender);  
+  }, [userGoal, userAge, userWeight, userHeight, userGender]);  // Add all dependencies for calculation
+  
+  const calculateCalories = (goal: string, age: number, weight: number, height: number, gender: string) => {
+    // Basal Metabolic Rate (BMR) calculation based on gender
+    let bmr: number;
+
+    if (gender === "Male") {
+      bmr = 10 * weight + 6.25 * height - 5 * age + 5;  // Mifflin-St Jeor for males
+    } else {
+      bmr = 10 * weight + 6.25 * height - 5 * age - 161;  // Mifflin-St Jeor for females
+    }
+
+    // Total Daily Energy Expenditure (TDEE) calculation based on activity level (optional)
+    // You can adjust this with a multiplier if the user is more or less active.
+    // For example:
+    const tdee = bmr * 1.2;  // Sedentary activity level (you can adjust based on the user's activity level)
+
+    // Adjust calorie intake based on the user's goal
+    let calorieIntake = tdee;
+
+    if (goal === "Gain") {
+      calorieIntake += 500;  // Surplus for gaining weight
+    } else if (goal === "Lose") {
+      calorieIntake -= 500;  // Deficit for losing weight
+    }
+
+    setMaxCalories(calorieIntake);  // Update the state with the calculated calorie intake
+  };
+
   const totalCalories = Math.round(calories); 
 
-  // Calculate calories from each macronutrient
   const proteinCalories = protein * 4;
   const fatCalories = fat * 9; 
   const carbCalories = carbohydrates * 4; 
 
-  // Calculate percentages based on MAX_CALORIES
-  const proteinPercentage = (proteinCalories / MAX_CALORIES) * 100;
-  const fatPercentage = (fatCalories / MAX_CALORIES) * 100;
-  const carbPercentage = (carbCalories / MAX_CALORIES) * 100;
+  const proteinPercentage = (proteinCalories / maxCalories) * 100;
+  const fatPercentage = (fatCalories / maxCalories) * 100;
+  const carbPercentage = (carbCalories / maxCalories) * 100;
 
-  // Function to handle removing nutrients and food
   const handleRemoveNutrients = (item) => {
     addNutrients(-item.cal, -item.protein, -item.fat, -item.carbohydrates); 
     removeRecentlyAddedFood(item); 
@@ -46,19 +97,16 @@ export default function HomeScreen() {
 
       <View style={styles.contentContainer}>
         <Text style={styles.calorieText}>
-          Calories Consumed: {totalCalories} / {MAX_CALORIES}
+          Calories Consumed: {totalCalories} / {maxCalories}
         </Text>
 
         <View style={styles.barContainer}>
           <View
-            style={[styles.calorieBar, { width: `${proteinPercentage}%`, backgroundColor: "orange" }]}
-          />
+            style={[styles.calorieBar, { width: `${proteinPercentage}%`, backgroundColor: "orange" }]} />
           <View
-            style={[styles.calorieBar, { width: `${fatPercentage}%`, backgroundColor: "purple" }]}
-          />
+            style={[styles.calorieBar, { width: `${fatPercentage}%`, backgroundColor: "purple" }]} />
           <View
-            style={[styles.calorieBar, { width: `${carbPercentage}%`, backgroundColor: "teal" }]}
-          />
+            style={[styles.calorieBar, { width: `${carbPercentage}%`, backgroundColor: "teal" }]} />
         </View>
 
         <View style={styles.legend}>
@@ -76,7 +124,6 @@ export default function HomeScreen() {
           </Text>
         </View>
 
-        {/* Display recently added foods with remove ("−") button */}
         <Text style={styles.recentlyAddedTitle}>Recently Added Foods:</Text>
         <FlatList
           data={recentlyAddedFoods}
