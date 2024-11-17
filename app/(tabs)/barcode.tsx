@@ -1,20 +1,19 @@
 import React, { useEffect, useState, useContext } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
-import { BarCodeScanner } from "expo-barcode-scanner"; 
-import { CalorieContext } from "../CalorieContext"; 
-import fetchData from "@/api/barcode"; 
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Button } from "react-native";
+import { CameraView, Camera } from "expo-camera";
+import { CalorieContext } from "../CalorieContext";
+import fetchData from "@/api/barcode";
 
 export default function Barcode() {
   const [hasPermission, setHasPermission] = useState(null);
   const [scannedData, setScannedData] = useState(null);
-  const [nutrientData, setNutrientData] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const { addNutrients, addRecentlyAddedFood } = useContext(CalorieContext); 
+  const { addNutrients, addRecentlyAddedFood } = useContext(CalorieContext);
 
   useEffect(() => {
     (async () => {
-      const { status } = await BarCodeScanner.requestPermissionsAsync();
+      const { status } = await Camera.requestCameraPermissionsAsync();
       setHasPermission(status === "granted");
     })();
   }, []);
@@ -22,17 +21,15 @@ export default function Barcode() {
   const fetchNutrientData = async (barcode) => {
     setLoading(true);
     try {
-      const response = await fetchData(barcode); 
+      const response = await fetchData(barcode);
       const data = response.data;
       const nutrients = data.hints[0]?.food.nutrients || {};
-      setNutrientData(nutrients);
-
-      // Add nutrients to context
+      
       addNutrients(
-        nutrients.ENERC_KCAL || 0, 
-        nutrients.PROCNT || 0,     
-        nutrients.FAT || 0,        
-        nutrients.CHOCDF || 0      
+        nutrients.ENERC_KCAL || 0,
+        nutrients.PROCNT || 0,
+        nutrients.FAT || 0,
+        nutrients.CHOCDF || 0
       );
 
       const foodItem = {
@@ -43,7 +40,7 @@ export default function Barcode() {
         carbohydrates: nutrients.CHOCDF || 0,
         brand: data.hints[0]?.food.brand || "Unknown Brand"
       };
-      addRecentlyAddedFood(foodItem); 
+      addRecentlyAddedFood(foodItem);
     } catch (error) {
       console.error("Error fetching nutrient data:", error);
     } finally {
@@ -51,9 +48,9 @@ export default function Barcode() {
     }
   };
 
-  const handleBarCodeScanned = ({ type, data }) => {
+  const handleBarcodeScanned = ({ type, data }) => {
     setScannedData(`Type: ${type}\nData: ${data}`);
-    fetchNutrientData(data); 
+    fetchNutrientData(data);
   };
 
   if (hasPermission === null) {
@@ -65,8 +62,11 @@ export default function Barcode() {
 
   return (
     <View style={styles.container}>
-      <BarCodeScanner
-        onBarCodeScanned={scannedData ? undefined : handleBarCodeScanned}
+      <CameraView
+        onBarcodeScanned={scannedData ? undefined : handleBarcodeScanned}
+        barcodeScannerSettings={{
+          barcodeTypes: ["qr", "ean13", "upc_a", "upc_e"], // Add formats you need
+        }}
         style={StyleSheet.absoluteFillObject}
       />
       <View style={styles.overlay}>
@@ -77,7 +77,7 @@ export default function Barcode() {
           <View style={styles.scannedData}>
             <Text style={styles.scannedText}>Item Added!</Text>
             <TouchableOpacity
-              onPress={() => setScannedData(null)} 
+              onPress={() => setScannedData(null)}
               style={styles.button}
             >
               <Text style={styles.buttonText}>Scan Again</Text>
@@ -107,15 +107,8 @@ const styles = StyleSheet.create({
     borderWidth: 4,
     borderRadius: 10,
     position: "absolute",
-    top: "30%", 
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 123, 255, 0.2)", 
-  },
-  text: {
-    fontSize: 18,
-    marginBottom: 20,
-    textAlign: "center",
+    top: "30%",
+    backgroundColor: "rgba(0, 123, 255, 0.2)",
   },
   scannedData: {
     marginTop: 20,
@@ -123,11 +116,7 @@ const styles = StyleSheet.create({
   },
   scannedText: {
     fontSize: 18,
-    color: "#fff", 
-  },
-  nutrientData: {
-    marginTop: 20,
-    alignItems: "center",
+    color: "#fff",
   },
   button: {
     marginTop: 10,
