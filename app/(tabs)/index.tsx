@@ -47,7 +47,6 @@ export default function HomeScreen() {
             calculateCalories(userData.goal, userData.age, userData.weight, userData.height, userData.gender);
           }
         } else {
-          // If no user is logged in, use default values
           setMaxCalories(2000);  // Default value when no user is logged in
         }
       };
