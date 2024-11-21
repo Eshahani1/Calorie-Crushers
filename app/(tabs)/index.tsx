@@ -2,9 +2,12 @@ import React, { useContext, useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
 import { CalorieContext } from "../CalorieContext";
 import { db } from "@/api/firebaseConfig2";  // Firestore config
-import { doc, getDoc } from "firebase/firestore"; // Firestore functions
+import { doc, getDoc, addDoc, collection, updateDoc, getDocs, query, where } from "firebase/firestore"; // Firestore functions
 import { auth } from "@/api/firebaseConfig";  // Auth config
 import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect
+import { BarChart } from "react-native-chart-kit";
+
+
 
 export default function HomeScreen() {
   const {
@@ -23,6 +26,8 @@ export default function HomeScreen() {
   const [userAge, setUserAge] = useState(0);  
   const [userWeight, setUserWeight] = useState(0);  
   const [userHeight, setUserHeight] = useState(0);
+
+  
 
   useFocusEffect(
     React.useCallback(() => {
@@ -95,10 +100,58 @@ export default function HomeScreen() {
     removeRecentlyAddedFood(item); 
   };
 
+  const submitCalories = async () => {
+    const user = auth.currentUser;
+    if (user) {
+      try {
+        const caloriesCollectionRef = collection(db, "calories"); // Reference to the 'calories' collection
+  
+        // Get today's date in ISO format (date only)
+        const today = new Date().toISOString().split("T")[0];
+  
+        // Query for a document for the user with today's date
+        const querySnapshot = await getDocs(
+          query(
+            caloriesCollectionRef,
+            where("userId", "==", user.uid),
+            where("date", "==", today)
+          )
+        );
+  
+        if (!querySnapshot.empty) {
+          // If a document exists, update it
+          const docId = querySnapshot.docs[0].id; // Get the document ID
+          await updateDoc(doc(db, "calories", docId), {
+            caloriesConsumed: totalCalories,
+            protein: protein,
+            fat: fat,
+            carbohydrates: carbohydrates,
+          });
+          alert("Calories updated successfully!");
+        } else {
+          // If no document exists, create a new one
+          await addDoc(caloriesCollectionRef, {
+            userId: user.uid,
+            caloriesConsumed: totalCalories,
+            date: today,
+            protein: protein,
+            fat: fat,
+            carbohydrates: carbohydrates,
+          });
+          alert("Calories submitted successfully!");
+        }
+      } catch (error) {
+        console.error("Error submitting or updating calories:", error);
+        alert("Failed to submit calories. Please try again.");
+      }
+    } else {
+      alert("You must be logged in to submit calories.");
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to Calorie Crushers!</Text>
-
       <View style={styles.contentContainer}>
         <Text style={styles.calorieText}>
           Calories Consumed: {totalCalories} / {maxCalories}
@@ -128,6 +181,10 @@ export default function HomeScreen() {
           </Text>
         </View>
 
+        <TouchableOpacity style={styles.submitButton} onPress={submitCalories}>
+          <Text style={styles.submitButtonText}>Submit Calories</Text>
+        </TouchableOpacity>
+
         <Text style={styles.recentlyAddedTitle}>Recently Added Foods:</Text>
         <FlatList
           data={recentlyAddedFoods}
@@ -144,7 +201,7 @@ export default function HomeScreen() {
               </TouchableOpacity>
             </View>
           )}
-          keyExtractor={(item) => item.id.toString()} 
+          keyExtractor={(item) => item.id.toString()}
         />
       </View>
     </View>
@@ -238,5 +295,17 @@ const styles = StyleSheet.create({
   removeButtonText: {
     color: "#fff",
     fontSize: 20,
+  },
+  submitButton: {
+    backgroundColor: "#28a745",
+    borderRadius: 10,
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    marginTop: 20,
+  },
+  submitButtonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "600",
   },
 });
