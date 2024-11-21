@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView } from "react-native";
 import { CalorieContext } from "../CalorieContext";
 import { db } from "@/api/firebaseConfig2";  // Firestore config
-import { doc, getDoc, addDoc, collection, updateDoc, getDocs, query, where } from "firebase/firestore"; // Firestore functions
+import { doc, getDoc, addDoc, collection, updateDoc, getDocs, query, where, onSnapshot } from "firebase/firestore"; // Firestore functions
 import { auth } from "@/api/firebaseConfig";  // Auth config
 import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect
 
@@ -24,21 +24,20 @@ export default function HomeScreen() {
   const [userAge, setUserAge] = useState(0);  
   const [userWeight, setUserWeight] = useState(0);  
   const [userHeight, setUserHeight] = useState(0);
-  const [recentCalories, setRecentCalories] = useState([]); // New state to hold recent calorie data  
+  const [recentCalories, setRecentCalories] = useState([]); 
 
 
-  const fetchCaloriesData = async () => {
+  const listenToCaloriesData = () => {
     const user = auth.currentUser;
     if (!user) {
       console.log("No user logged in");
       return;
     }
   
-    try {
-      const caloriesCollectionRef = collection(db, "calories");
-      const q = query(caloriesCollectionRef, where("userId", "==", user.uid));
-      const querySnapshot = await getDocs(q);
+    const caloriesCollectionRef = collection(db, "calories");
+    const q = query(caloriesCollectionRef, where("userId", "==", user.uid));
   
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
       const data = [];
       querySnapshot.forEach((doc) => {
         const docData = doc.data();
@@ -50,19 +49,17 @@ export default function HomeScreen() {
           carbohydrates: docData.carbohydrates,
         });
       });
+      setRecentCalories(data); // Update the state with the new data
+    });
   
-      // Set the fetched data in the state
-      setRecentCalories(data); // Use the state here
-  
-    } catch (error) {
-      console.error("Error fetching calories data:", error);
-    }
-  };  
+    // Return the unsubscribe function to clean up the listener when the component unmounts
+    return unsubscribe;
+  };
 
 
   useFocusEffect(
     React.useCallback(() => {
-      fetchCaloriesData();
+      listenToCaloriesData();
       const fetchUserProfile = async () => {
         const user = auth.currentUser;
         if (user) {
@@ -173,8 +170,7 @@ export default function HomeScreen() {
           alert("Calories submitted successfully!");
         }
   
-        const updatedRecentCalories = await fetchCaloriesData();
-        setRecentCalories(updatedRecentCalories);  
+     
   
       } catch (error) {
         console.error("Error submitting or updating calories:", error);
