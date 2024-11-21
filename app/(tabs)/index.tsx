@@ -1,12 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView } from "react-native";
 import { CalorieContext } from "../CalorieContext";
 import { db } from "@/api/firebaseConfig2";  // Firestore config
 import { doc, getDoc, addDoc, collection, updateDoc, getDocs, query, where } from "firebase/firestore"; // Firestore functions
 import { auth } from "@/api/firebaseConfig";  // Auth config
 import { useFocusEffect } from "@react-navigation/native"; // Import useFocusEffect
-import { BarChart } from "react-native-chart-kit";
-
 
 
 export default function HomeScreen() {
@@ -26,11 +24,45 @@ export default function HomeScreen() {
   const [userAge, setUserAge] = useState(0);  
   const [userWeight, setUserWeight] = useState(0);  
   const [userHeight, setUserHeight] = useState(0);
+  const [recentCalories, setRecentCalories] = useState([]); // New state to hold recent calorie data  
 
+
+  const fetchCaloriesData = async () => {
+    const user = auth.currentUser;
+    if (!user) {
+      console.log("No user logged in");
+      return;
+    }
   
+    try {
+      const caloriesCollectionRef = collection(db, "calories");
+      const q = query(caloriesCollectionRef, where("userId", "==", user.uid));
+      const querySnapshot = await getDocs(q);
+  
+      const data = [];
+      querySnapshot.forEach((doc) => {
+        const docData = doc.data();
+        data.push({
+          date: docData.date,
+          caloriesConsumed: docData.caloriesConsumed,
+          protein: docData.protein,
+          fat: docData.fat,
+          carbohydrates: docData.carbohydrates,
+        });
+      });
+  
+      // Set the fetched data in the state
+      setRecentCalories(data); // Use the state here
+  
+    } catch (error) {
+      console.error("Error fetching calories data:", error);
+    }
+  };  
+
 
   useFocusEffect(
     React.useCallback(() => {
+      fetchCaloriesData();
       const fetchUserProfile = async () => {
         const user = auth.currentUser;
         if (user) {
@@ -140,6 +172,10 @@ export default function HomeScreen() {
           });
           alert("Calories submitted successfully!");
         }
+  
+        const updatedRecentCalories = await fetchCaloriesData();
+        setRecentCalories(updatedRecentCalories);  
+  
       } catch (error) {
         console.error("Error submitting or updating calories:", error);
         alert("Failed to submit calories. Please try again.");
@@ -150,62 +186,78 @@ export default function HomeScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome to Calorie Crushers!</Text>
-      <View style={styles.contentContainer}>
-        <Text style={styles.calorieText}>
-          Calories Consumed: {totalCalories} / {maxCalories}
-        </Text>
+  <View style={styles.container}>
+    <Text style={styles.title}>Welcome to Calorie Crushers!</Text>
+    <View style={styles.contentContainer}>
+      <Text style={styles.calorieText}>
+        Calories Consumed: {totalCalories} / {maxCalories}
+      </Text>
 
-        <View style={styles.barContainer}>
-          <View
-            style={[styles.calorieBar, { width: `${proteinPercentage}%`, backgroundColor: "orange" }]} />
-          <View
-            style={[styles.calorieBar, { width: `${fatPercentage}%`, backgroundColor: "purple" }]} />
-          <View
-            style={[styles.calorieBar, { width: `${carbPercentage}%`, backgroundColor: "teal" }]} />
-        </View>
-
-        <View style={styles.legend}>
-          <Text style={styles.legendItem}>
-            <Text style={{ color: "orange" }}>■</Text> Protein:{" "}
-            {proteinPercentage.toFixed(1)}% ({protein.toFixed(1)}g)
-          </Text>
-          <Text style={styles.legendItem}>
-            <Text style={{ color: "purple" }}>■</Text> Fat:{" "}
-            {fatPercentage.toFixed(1)}% ({fat.toFixed(1)}g)
-          </Text>
-          <Text style={styles.legendItem}>
-            <Text style={{ color: "teal" }}>■</Text> Carbs:{" "}
-            {carbPercentage.toFixed(1)}% ({carbohydrates.toFixed(1)}g)
-          </Text>
-        </View>
-
-        <TouchableOpacity style={styles.submitButton} onPress={submitCalories}>
-          <Text style={styles.submitButtonText}>Submit Calories</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.recentlyAddedTitle}>Recently Added Foods:</Text>
-        <FlatList
-          data={recentlyAddedFoods}
-          renderItem={({ item }) => (
-            <View style={styles.foodItemContainer}>
-              <Text style={styles.foodItemText}>
-                {item.label} - {item.cal} kcal {item.brand && `(${item.brand})`}
-              </Text>
-              <TouchableOpacity
-                style={styles.removeButton}
-                onPress={() => handleRemoveNutrients(item)}
-              >
-                <Text style={styles.removeButtonText}>−</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-          keyExtractor={(item) => item.id.toString()}
-        />
+      <View style={styles.barContainer}>
+        <View
+          style={[styles.calorieBar, { width: `${proteinPercentage}%`, backgroundColor: "orange" }]} />
+        <View
+          style={[styles.calorieBar, { width: `${fatPercentage}%`, backgroundColor: "purple" }]} />
+        <View
+          style={[styles.calorieBar, { width: `${carbPercentage}%`, backgroundColor: "teal" }]} />
       </View>
+
+      <View style={styles.legend}>
+        <Text style={styles.legendItem}>
+          <Text style={{ color: "orange" }}>■</Text> Protein:{" "}
+          {proteinPercentage.toFixed(1)}% ({protein.toFixed(1)}g)
+        </Text>
+        <Text style={styles.legendItem}>
+          <Text style={{ color: "purple" }}>■</Text> Fat:{" "}
+          {fatPercentage.toFixed(1)}% ({fat.toFixed(1)}g)
+        </Text>
+        <Text style={styles.legendItem}>
+          <Text style={{ color: "teal" }}>■</Text> Carbs:{" "}
+          {carbPercentage.toFixed(1)}% ({carbohydrates.toFixed(1)}g)
+        </Text>
+      </View>
+
+      <TouchableOpacity style={styles.submitButton} onPress={submitCalories}>
+        <Text style={styles.submitButtonText}>Submit Calories</Text>
+      </TouchableOpacity>
+
+      <Text style={styles.recentlyAddedTitle}>Recently Added Foods:</Text>
+      {/* FlatList for displaying foods */}
+      <FlatList
+        data={recentlyAddedFoods}
+        renderItem={({ item }) => (
+          <View style={styles.foodItemContainer}>
+            <Text style={styles.foodItemText}>
+              {item.label} - {item.cal} kcal {item.brand && `(${item.brand})`}
+            </Text>
+            <TouchableOpacity
+              style={styles.removeButton}
+              onPress={() => handleRemoveNutrients(item)}
+            >
+              <Text style={styles.removeButtonText}>−</Text>
+            </TouchableOpacity>
+          </View>
+        )}
+        keyExtractor={(item) => item.id.toString()}
+      />
+      <Text style={styles.recentCaloriesTitle}>Recent Calories Data:</Text>
+<FlatList
+  data={recentCalories}
+  renderItem={({ item }) => (
+    <View style={styles.calorieItem}>
+      <Text>Date: {item.date}</Text>
+      <Text>Calories Consumed: {item.caloriesConsumed}</Text>
+      <Text>Protein: {item.protein}g</Text>
+      <Text>Fat: {item.fat}g</Text>
+      <Text>Carbohydrates: {item.carbohydrates}g</Text>
     </View>
-  );
+  )}
+  keyExtractor={(item, index) => index.toString()}
+/>
+    </View>
+  </View>
+);
+
 }
 
 
@@ -307,5 +359,33 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
     fontWeight: "600",
+  },
+  recentCaloriesTitle: {
+    fontSize: 22,
+    fontWeight: "600",
+    color: "#333",
+    marginTop: 30,
+    marginBottom: 15,
+    textAlign: "center",
+  },
+  
+  calorieItem: {
+    backgroundColor: "#ffffff",
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    width: "100%",
+  },
+  
+  calorieItemText: {
+    fontSize: 16,
+    fontWeight: "400",
+    color: "#333",
+    marginBottom: 5,
   },
 });
